@@ -1,6 +1,7 @@
 ﻿using Todo.Domain.Entities;
 using Todo.Application.Services.Interfaces;
 using Todo.Persistence.Repositories.Interfaces;
+using Todo.Persistence.Repositories;
 
 namespace Todo.Application.Services;
 
@@ -65,12 +66,16 @@ public class CategoriaService : ICategoriaService
 
     public async Task<Categoria[]> GetAllCategoriaAsync()
     {
-        return await _repository.GetAllCategoriaAsync();
+        var categorias = await _repository.GetAllCategoriaAsync();
+        if (categorias == null) throw new Exception("Categoria não encontrada");
+        return categorias;
     }
 
     public async Task<Categoria> GetUmaCategoriaAsync(int id)
     {
-       return await _repository.GetUmaCategoriaAsync(id);
+        var categoria = await _repository.GetUmaCategoriaAsync(id);
+        if (categoria == null) throw new Exception("Categoria não encontrada");
+        return categoria;
     }
 
     public async Task<Categoria> Update(Categoria categoria)
