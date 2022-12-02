@@ -43,7 +43,7 @@ public class CategoriaServiceTests
     public async Task Add_Deve_Retornar_Null_ErroAoSalvar()
     {
         var categoria = new Categoria();
-        
+
         _repository.Add(categoria);
         _repository.SaveChangesAsync().Returns(false);
 
@@ -72,7 +72,7 @@ public class CategoriaServiceTests
         _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(Task.FromResult<Categoria>(null));
 
         var result = await Assert.ThrowsAsync<Exception>(() => _service.Delete(categoria));
-     
+
         result.Message.Should().Be("Categoria não encontrada");
     }
 
@@ -112,5 +112,111 @@ public class CategoriaServiceTests
         var result = await Assert.ThrowsAsync<Exception>(() => _service.Desativar(categoria));
 
         result.Message.Should().Be("Categoria não encontrada");
+    }
+
+    [Fact]
+    public async Task Desativa_Deve_RetornarFalse_QaundoNaoConseguirSalvar()
+    {
+        var categoria = new Categoria();
+
+        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
+        _repository.Update(categoria);
+        _repository.SaveChangesAsync().Returns(false);
+
+        var result = await _service.Desativar(categoria);
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task GetAllCategoriaAsync_Deve_RetornarUmaLista()
+    {
+        var categorias = new List<Categoria>();
+
+        for (int i = 0; i < 10; i++)
+        {
+            categorias.Add(_categoriaBuilder.GeraCategoria(true));
+        }
+
+        _repository.GetAllCategoriaAsync().Returns(categorias.ToArray());
+         var result = await _service.GetAllCategoriaAsync();
+        result.Should().BeEquivalentTo(categorias);
+    }
+
+    [Fact]
+    public async Task GetAllCategoriaAsync_Deve_RetornarNenhumaCategoriaEncontrada()
+    {
+        _repository.GetAllCategoriaAsync().Returns(Task.FromResult<Categoria[]>(null));
+        var result = await Assert.ThrowsAsync<Exception>(() => _service.GetAllCategoriaAsync());
+
+        result.Message.Should().Be("Categoria não encontrada");
+    }
+
+    [Fact]
+    public async Task GetUmaCategoria_DeveRetornar_UmaCategoria()
+    {
+        var categoria = _categoriaBuilder.GeraCategoria(true);
+
+        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
+
+        var result = await _service.GetUmaCategoriaAsync(categoria.Id);
+
+        result.Should().BeEquivalentTo(categoria);
+    }
+
+    [Fact]
+    public async Task GetUmaCategoriaAsync_DeveRetornar_CategoriaNaoEncontrada()
+    {
+        var id = _faker.Random.Int();
+
+        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(Task.FromResult<Categoria>(null));
+
+        var result = await Assert.ThrowsAsync<Exception>(() => _service.GetUmaCategoriaAsync(id));
+
+        result.Message.Should().Be("Categoria não encontrada");
+    }
+
+    [Fact]
+    public async Task Update_Deve_AtualizarUmaCategoria()
+    {
+        var categoria = _categoriaBuilder.GeraCategoria(true);
+
+        var categoriaAtualizada = new Categoria
+        {
+            Id = categoria.Id,
+            Nome = _faker.Person.FirstName,
+            Ativa = categoria.Ativa
+        };
+
+        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
+
+        _repository.Update(categoriaAtualizada);
+        _repository.SaveChangesAsync().Returns(true);
+        var result = await _service.Update(categoriaAtualizada);
+
+        result.Should().BeEquivalentTo(categoriaAtualizada);
+    }
+
+    [Fact]
+    public async Task Update_Deve_RetornarCategoriaNaoEncontrada()
+    {
+        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(Task.FromResult<Categoria>(null));
+
+        var result = await Assert.ThrowsAsync<Exception>(() => _service.Update(new Categoria()));
+
+        result.Message.Should().Be("Categoria não encontrada");
+    }
+
+    [Fact]
+    public async Task Update_Deve_RetornarErroAoSalvarAtualizacao()
+    {
+        var categoria = _categoriaBuilder.GeraCategoria();
+
+        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
+        _repository.Update(categoria);
+        _repository.SaveChangesAsync().Returns(false);
+
+        var result = await Assert.ThrowsAsync<Exception>(() => _service.Update(categoria));
+
+        result.Message.Should().Be("Erro ao salvar a atualizacao");
     }
 }
