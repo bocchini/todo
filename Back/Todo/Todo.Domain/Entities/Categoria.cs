@@ -11,5 +11,5 @@ public class Categoria
     public string Nome { get; set; }
 
     [Required]
-    public bool Ativa { get; set; }
+    public bool Ativa { get; set; } = true;
 }

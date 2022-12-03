@@ -1,7 +1,6 @@
 ﻿using Todo.Domain.Entities;
 using Todo.Application.Services.Interfaces;
 using Todo.Persistence.Repositories.Interfaces;
-using Todo.Persistence.Repositories;
 
 namespace Todo.Application.Services;
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Todo.Application.Services.Interfaces;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Todo.API.Controllers
 {
@@ -8,16 +8,34 @@ namespace Todo.API.Controllers
     [ApiController]
     public class CategoriaController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult Get()
+        private readonly ICategoriaService _service;
+
+        public CategoriaController(ICategoriaService service)
         {
-            return Ok(new string[] { "value1", "value2" });
+            _service = service;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            try
+            {
+                var categorias = await _service.GetAllCategoriaAsync();
+                if (categorias == null) return NotFound("Categorias não encontradas");
+                return Ok(categorias);
+            }
+            catch(Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Interno server error");
+            }
         }
 
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return "value";
+            var categoria = await _service.GetUmaCategoriaAsync(id);
+            if(categoria == null) return NotFound("Nenhuma categoria encontrada");
+            return Ok(categoria);
         }
 
         [HttpPost]
