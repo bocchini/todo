@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Todo.Domain.Entities;
+﻿using Todo.Domain.Entities;
 using Todo.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 using Todo.Persistence.Repositories.Interfaces;
 
 namespace Todo.Persistence.Repositories;
@@ -12,6 +12,7 @@ public class CategoriaRepositoy : ICategoriaRepository
     public CategoriaRepositoy(TodoContext todoContext)
     {
         _context = todoContext;
+        _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }
 
     public void Add<T>(T entity) where T : class

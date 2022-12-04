@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Todo.Persistence.Repositories;
 using Todo.Application.Services.Interfaces;
 using Todo.Persistence.Repositories.Interfaces;
+using AutoMapper;
+using Todo.Application.Dtos.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepositoy>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+var mappingConfig = new MapperConfiguration(mc =>
+{
+    mc.AddProfile(new MappingProfile());
+});
+IMapper mapper = mappingConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 var database = builder.Configuration.GetConnectionString("Database");
 builder.Services.AddDbContext<TodoContext>(context => context.UseSqlite(database));

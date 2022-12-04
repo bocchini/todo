@@ -17,7 +17,7 @@ namespace Todo.Persistence.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Nome = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Ativa = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Ativa = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {

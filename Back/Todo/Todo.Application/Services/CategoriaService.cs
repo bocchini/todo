@@ -1,7 +1,6 @@
 ﻿using Todo.Domain.Entities;
 using Todo.Application.Services.Interfaces;
 using Todo.Persistence.Repositories.Interfaces;
-using Todo.Persistence.Repositories;
 
 namespace Todo.Application.Services;
 
@@ -17,7 +16,8 @@ public class CategoriaService : ICategoriaService
     public async Task<Categoria> Add(Categoria categoria)
     {
         try 
-        { 
+        {
+            categoria.Ativa = true;
             _repository.Add(categoria);
             if (await _repository.SaveChangesAsync()) return await _repository.GetUmaCategoriaAsync(categoria.Id);
             return null;
