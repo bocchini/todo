@@ -30,7 +30,7 @@ namespace Todo.API.Controllers
             }
             catch(Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Interno server error");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error");
             }
         }
 
@@ -45,7 +45,7 @@ namespace Todo.API.Controllers
             }
             catch(Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Interno server error");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error");
             }
         }
 
@@ -61,18 +61,36 @@ namespace Todo.API.Controllers
             }
             catch (Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Interno server error");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
             }
         }
 
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] Categoria categoria)
         {
+            try
+            {
+                var categoriaAtualizada = await _service.Update(categoria);
+                if (categoriaAtualizada == null) return NotFound("Erro ao atualizar a categoria");
+                return Ok(categoriaAtualizada);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
 
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete]
+        public async Task<IActionResult> Delete(Categoria categoria)
         {
+            try
+            {
+                return (await _service.Delete(categoria) ? Ok("Categoria removida com sucesso") : NotFound("Erro ao remover a categoria"));
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
     }
 }

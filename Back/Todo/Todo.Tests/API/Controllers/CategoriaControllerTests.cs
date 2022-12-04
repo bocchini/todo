@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using FluentAssertions.Execution;
 using Todo.Application.Services.Interfaces;
+using Microsoft.AspNetCore.Hosting.Server;
 
 namespace Todo.Tests.API.Controllers;
 
@@ -71,7 +72,7 @@ public class CategoriaControllerTests
 
         using (new AssertionScope())
         {
-            result.Value.Should().Be("Interno server error");
+            result.Value.Should().Be("Internal server error");
             result.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
     }
@@ -117,7 +118,7 @@ public class CategoriaControllerTests
 
         using (new AssertionScope())
         {
-            result.Value.Should().Be("Interno server error");
+            result.Value.Should().Be("Internal server error");
             result.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
     }
@@ -188,7 +189,102 @@ public class CategoriaControllerTests
 
         using(new AssertionScope())
         {
-            result.Value.Should().Be("Interno server error");
+            result.Value.Should().Be("Internal server error");
+            result.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [Fact]
+    public async Task Put_Deve_AtualizarCategoria_StatusCode200()
+    {
+        var categoria = _builder.GeraCategoria(true);
+
+        _service.Update(categoria).Returns(categoria);
+
+        var result = (OkObjectResult)await _controller.Put(categoria);
+
+        using(new AssertionScope())
+        {
+            result.Value.Should().BeEquivalentTo(categoria);
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
+        }
+    }
+
+    [Fact]
+    public async Task Put_Deve_RetornarBagRequest_ErroAoAtualizar()
+    {
+        var categoria = _builder.GeraCategoria(true);
+
+        _service.Update(categoria).Returns(Task.FromResult<Categoria>(null));
+
+        var result = (NotFoundObjectResult) await _controller.Put(categoria);
+
+        using(new AssertionScope())
+        {
+            result.Value.Should().Be("Erro ao atualizar a categoria");
+            result.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+        }
+    }
+
+    [Fact]
+    public async Task Put_Deve_RetornarException_ErroInternoServerError()
+    {
+        var categorias = _builder.GeraCategoria(true);
+        
+        _service.Update(Arg.Any<Categoria>()).Returns(Task.FromException<Categoria>(new Exception("")));
+
+        var result = (ObjectResult) await _controller.Put(categorias);
+
+        using(new AssertionScope())
+        {
+            result.Value.Should().Be("Internal server error");
+            result.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [Fact]
+    public async Task Delete_Deve_RemoverCategoriaRetonarTrue_statusCode200()
+    { 
+        var categoria = _builder.GeraCategoria(true);
+        _service.Delete(Arg.Any<Categoria>()).Returns(true);
+
+        var result = (OkObjectResult)await _controller.Delete(categoria);
+
+        using (new AssertionScope())
+        {
+            result.Value.Should().Be("Categoria removida com sucesso");
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
+        }
+    }
+
+    [Fact]
+    public async Task Delete_Deve_Retornar_NotFoundEErroAoRemoverACategoria_QuandoNaoConseguirRemover()
+    {
+        var categoria = _builder.GeraCategoria(true);
+
+        _service.Delete(Arg.Any<Categoria>()).Returns(false);
+
+        var result = (NotFoundObjectResult)await _controller.Delete(categoria);
+
+        using(new AssertionScope())
+        {
+            result.Value.Should().Be("Erro ao remover a categoria");
+            result.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+        }
+    }
+
+    [Fact]
+    public async Task Delete_Deve_Retornar_ExceptionEInternalServerError()
+    {
+        var categoria = _builder.GeraCategoria(true);
+
+        _service.Delete(Arg.Any<Categoria>()).Returns(Task.FromException<bool>(new Exception("")));
+
+        var result = (ObjectResult)await _controller.Delete(categoria);
+
+        using(new AssertionScope())
+        {
+            result.Value.Should().Be("Internal server error");
             result.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
     }
