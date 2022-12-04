@@ -1,13 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Todo.Domain.Entities;
+namespace Todo.Application;
 
-public class Categoria
+public class CategoriaDto
 {
-    public int Id { get; set; }
+    public int? Id { get; set; }
 
-    [Required]
-    [StringLength(100)]
     public string Nome { get; set; }
 
     public bool? Ativa { get; set; }

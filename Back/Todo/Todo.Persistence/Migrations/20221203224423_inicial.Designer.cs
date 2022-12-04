@@ -10,7 +10,7 @@ using Todo.Persistence.Context;
 namespace Todo.Persistence.Migrations
 {
     [DbContext(typeof(TodoContext))]
-    [Migration("20221201195303_inicial")]
+    [Migration("20221203224423_inicial")]
     partial class inicial
     {
         /// <inheritdoc />
