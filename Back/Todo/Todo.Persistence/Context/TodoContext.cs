@@ -9,4 +9,5 @@ public  class TodoContext : DbContext
 	{}
 
 	public DbSet<Categoria> Categorias { get; set; }
+	public DbSet<Tarefa> Tarefas { get; set; }
 }

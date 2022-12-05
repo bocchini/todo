@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Todo.Persistence.Context;
 
@@ -10,9 +11,11 @@ using Todo.Persistence.Context;
 namespace Todo.Persistence.Migrations
 {
     [DbContext(typeof(TodoContext))]
-    partial class TodoContextModelSnapshot : ModelSnapshot
+    [Migration("20221204173152_tarefas")]
+    partial class tarefas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.0");
