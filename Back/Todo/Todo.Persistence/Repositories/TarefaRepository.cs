@@ -12,6 +12,7 @@ public class TarefaRepository : ITarefaRepository
     public TarefaRepository(TodoContext context)
     {
         this._context = context;
+        _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }
 
     public void Add<T>(T entity) where T : class
@@ -33,6 +34,7 @@ public class TarefaRepository : ITarefaRepository
     {
         IQueryable<Tarefa> query = _context.Tarefas;
         return await query.Where(t => t.CategoriaId == categoriaId && t.EstaCompleta == false)
+            .Include(c => c.Categoria)
             .OrderBy(t => t.Nome)
             .ToArrayAsync();
     }
