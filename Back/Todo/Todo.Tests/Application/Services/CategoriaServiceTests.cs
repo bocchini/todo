@@ -77,7 +77,7 @@ public class CategoriaServiceTests
     }
 
     [Fact]
-    public async Task Delete_Deve_RetornarFalse_QaundoNaoConseguirSalvar()
+    public async Task Delete_Deve_RetornarFalse_QuandoNaoConseguirSalvar()
     {
         var categoria = new Categoria();
 
