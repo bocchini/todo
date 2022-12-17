@@ -1,11 +1,10 @@
 ﻿using Bogus;
-using NSubstitute;
-using Todo.Tests.Builders;
-using Todo.Domain.Entities;
-using Todo.Application.Services;
-using Todo.Persistence.Repositories.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
+using NSubstitute;
+using Todo.Application.Services;
+using Todo.Domain.Entities;
+using Todo.Persistence.Repositories.Interfaces;
+using Todo.Tests.Builders;
 
 namespace Todo.Tests.Application.Services;
 
@@ -155,5 +154,31 @@ public class TarefaServiceTests
         var result = await Assert.ThrowsAsync<Exception>(() => _service.Update(tarefa));
 
         result.Message.Should().Be("Tarefa não encontrada");
+    }
+
+    [Fact]
+    public async Task Update_Deve_Retornar_ExceptionQuandoNaoConseguirSalvar()
+    {
+        var tarefa = _builder.GeraTarefa(true);
+
+        _repository.GetUmaTarefaAsync(Arg.Any<int>()).Returns(tarefa);
+        _repository.Update(Arg.Any<Tarefa>());
+        _repository.SaveChangesAsync().Returns(false);
+
+        var result = await Assert.ThrowsAsync<Exception>(() => _service.Update(tarefa));
+
+        result.Message.Should().Be("Erro ao salvar a atualização");
+    }
+
+    [Fact]
+    public async Task Update_Deve_Retornar_ExceptionQuandotiverErroAoBuscar()
+    {
+        var tarefa = _builder.GeraTarefa(true);
+
+        _repository.GetUmaTarefaAsync(Arg.Any<int>()).Returns(Task.FromException<Tarefa>(new Exception("Erro ao buscar")));
+
+        var result = await Assert.ThrowsAsync<Exception>(() => _service.Update(tarefa));
+
+        result.Message.Should().Be("Erro ao buscar");
     }
 }
