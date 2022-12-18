@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Todo.Application;
+﻿namespace Todo.Application;
 
 public class CategoriaDto
 {

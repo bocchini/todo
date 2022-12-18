@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Todo.Domain.Entities;
 
-namespace Todo.Domain.Entities;
+namespace Todo.Application.Dtos;
 
-public class Tarefa
+public class TarefaDto
 {
-    public int Id { get; set; }
+    public int? Id { get; set; }
 
     public string Nome { get; set; }
 
@@ -17,5 +17,4 @@ public class Tarefa
     public int CategoriaId { get; set; }
 
     public Categoria? Categoria { get; set; }
-
 }
