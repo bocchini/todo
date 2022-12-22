@@ -57,7 +57,7 @@ namespace Todo.API.Controllers
             {
                 var tarefa = _mapper.Map<Tarefa>(tarefaDto);
                 var tarefaAdicionada = await _tarefaService.Add(tarefa);
-                if (tarefaAdicionada is null) return NotFound("Erro aoadicionar uma tarefa");
+                if (tarefaAdicionada is null) return NotFound("Erro ao adicionar uma tarefa");
                 return Ok(tarefaAdicionada);
 
             }
