@@ -1,10 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using Todo.Domain.Entities;
 
-namespace Todo.Domain.Entities;
+namespace Todo.Application.Dtos;
 
-public class Tarefa
+public class TarefaDto
 {
-    public int Id { get; set; }
 
     public string Nome { get; set; }
 
@@ -15,8 +14,5 @@ public class Tarefa
     public DateTime DataCadastro { get; set; }
 
     public int CategoriaId { get; set; }
-
-    [JsonIgnore]
-    public Categoria? Categoria { get; set; }
 
 }

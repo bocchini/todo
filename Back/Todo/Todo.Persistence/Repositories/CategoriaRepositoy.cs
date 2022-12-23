@@ -11,7 +11,7 @@ public class CategoriaRepositoy : ICategoriaRepository
 
     public CategoriaRepositoy(TodoContext todoContext)
     {
-        _context = todoContext;
+        _context = todoContext;  
         _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }
 

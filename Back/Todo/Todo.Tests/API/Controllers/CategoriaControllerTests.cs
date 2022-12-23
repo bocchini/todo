@@ -1,8 +1,8 @@
 ﻿using Bogus;
 using AutoMapper;
 using NSubstitute;
-using Todo.Application;
 using FluentAssertions;
+using Todo.Application;
 using Todo.Tests.Builders;
 using Todo.API.Controllers;
 using Todo.Domain.Entities;
@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using FluentAssertions.Execution;
 using Todo.Application.Services.Interfaces;
-using Microsoft.AspNetCore.Hosting.Server;
 
 namespace Todo.Tests.API.Controllers;
 
