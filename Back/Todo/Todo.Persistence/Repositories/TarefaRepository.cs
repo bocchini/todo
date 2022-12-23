@@ -11,7 +11,8 @@ public class TarefaRepository : ITarefaRepository
 
     public TarefaRepository(TodoContext context)
     {
-        this._context = context;
+        _context = context;
+        _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }
 
     public void Add<T>(T entity) where T : class
@@ -48,6 +49,6 @@ public class TarefaRepository : ITarefaRepository
 
     public void Update<T>(T entity) where T : class
     {
-       _context.Update(entity);
+       _context.Update(entity);        
     }
 }

@@ -4,7 +4,6 @@ namespace Todo.Application.Dtos;
 
 public class TarefaDto
 {
-    public int? Id { get; set; }
 
     public string Nome { get; set; }
 
@@ -16,5 +15,4 @@ public class TarefaDto
 
     public int CategoriaId { get; set; }
 
-    public Categoria? Categoria { get; set; }
 }

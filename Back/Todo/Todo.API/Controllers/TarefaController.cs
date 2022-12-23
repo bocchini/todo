@@ -72,8 +72,7 @@ namespace Todo.API.Controllers
         public async Task<IActionResult> Update(Tarefa tarefa)
         {
             try
-            {
-                if (await _tarefaService.GetById(tarefa.Id) is null) return NotFound("Tarefa não localizada");
+            {                
                 var tarefaAtualizada = await _tarefaService.Update(tarefa);
                 if (tarefaAtualizada is null) return NotFound("Erro ao atualizar a tarefa");
                 return Ok(tarefaAtualizada);

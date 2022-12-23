@@ -156,15 +156,43 @@ public class TarefaControllerTests
     }
 
     [Fact]
-    public async Task Update_Deve_Retornar_NotFound_QuandoNaoEncontrarATarefa()
+    public async Task Update_Deve_Retornar_NotFound_NaoConseguirSalvar()
     {
-        _tarefaService.GetById(Arg.Any<int>()).Returns(Task.FromResult<Tarefa>(null));
+        _tarefaService.Update(Arg.Any<Tarefa>()).Returns(Task.FromResult<Tarefa>(null));
 
         var result = (NotFoundObjectResult)await _controller.Update(new Tarefa());
 
         using(new AssertionScope())
         {
-            result.Value.Should().Be("Tarefa não localizada");
+            result.Value.Should().Be("Erro ao atualizar a tarefa");
+            result.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+        }
+    }
+
+    [Fact]
+    public async Task Delete_Deve_Conseguir_Deletar_UmaTarefa()
+    {
+        _tarefaService.Delete(Arg.Any<Tarefa>()).Returns(true);
+
+        var result = (OkObjectResult)await _controller.Delete(new Tarefa());
+
+        using(new AssertionScope())
+        {
+            result.Value.Should().Be("Tarefa removida com sucesso");
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
+        }
+    }
+
+    [Fact]
+    public async Task Delete_Deve_Retornar_Erro_QuandoNaoConseguirDeletar()
+    {
+        _tarefaService.Delete(Arg.Any<Tarefa>()).Returns(false);
+
+        var result = (NotFoundObjectResult)await _controller.Delete(new Tarefa());
+
+        using(new AssertionScope())
+        {
+            result.Value.Should().Be("Erro ao remover a tarefa");
             result.StatusCode.Should().Be(StatusCodes.Status404NotFound);
         }
     }
