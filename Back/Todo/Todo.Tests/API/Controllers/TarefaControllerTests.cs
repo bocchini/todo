@@ -5,11 +5,11 @@ using FluentAssertions;
 using Todo.Tests.Builders;
 using Todo.Domain.Entities;
 using Todo.API.Controllers;
-using FluentAssertions.Execution;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Todo.Application.Services.Interfaces;
 using Todo.Application.Dtos;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using FluentAssertions.Execution;
+using Todo.Application.Services.Interfaces;
 
 namespace Todo.Tests.API.Controllers;
 
@@ -133,6 +133,38 @@ public class TarefaControllerTests
         using(new AssertionScope())
         {
             result.Value.Should().Be("Erro ao adicionar uma tarefa");
+            result.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+        }
+    }
+
+    [Fact]
+    public async Task Update_Deve_AtualizarUmaTarefa()
+    {
+        var tarefa = _builder.GeraTarefa(true);
+
+        _tarefaService.GetById(Arg.Any<int>()).Returns(new Tarefa());
+        _tarefaService.Update(Arg.Any<Tarefa>()).Returns(tarefa);
+
+        var result = (OkObjectResult)await _controller.Update(tarefa);
+
+        using(new AssertionScope())
+        {
+            result.Value.Should().Be(tarefa);
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
+            _ = _tarefaService.Received().Update(tarefa);
+        }
+    }
+
+    [Fact]
+    public async Task Update_Deve_Retornar_NotFound_QuandoNaoEncontrarATarefa()
+    {
+        _tarefaService.GetById(Arg.Any<int>()).Returns(Task.FromResult<Tarefa>(null));
+
+        var result = (NotFoundObjectResult)await _controller.Update(new Tarefa());
+
+        using(new AssertionScope())
+        {
+            result.Value.Should().Be("Tarefa não localizada");
             result.StatusCode.Should().Be(StatusCodes.Status404NotFound);
         }
     }
