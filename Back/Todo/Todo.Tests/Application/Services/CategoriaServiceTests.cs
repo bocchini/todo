@@ -11,13 +11,13 @@ namespace Todo.Tests.Application.Services;
 public class CategoriaServiceTests
 {
     private readonly CategoriaService _service;
-    private readonly ICategoriaRepository _repository;
+    private readonly IUnitOfWork _repository;
     private readonly CategoriaBuilder _categoriaBuilder;
     private readonly Faker _faker;
 
     public CategoriaServiceTests()
     {
-        _repository = Substitute.For<ICategoriaRepository>();
+        _repository = Substitute.For<IUnitOfWork>();
         _service = new CategoriaService(_repository);
         _categoriaBuilder = new CategoriaBuilder();
         _faker = new Faker();
@@ -27,12 +27,12 @@ public class CategoriaServiceTests
     public async Task Add_Deve_Adicionar_CategoriaAsync()
     {
         var categoria = _categoriaBuilder.GeraCategoria();
-        _repository.Add(categoria);
+        _repository.CategoriaRepository.Add(categoria);
 
-        _repository.SaveChangesAsync().Returns(true);
+        _repository.Commit().Returns(true);
         categoria.Id = _faker.Random.Int(0, 100);
 
-        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
+        _repository.CategoriaRepository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
 
         var result = await _service.Add(categoria);
 
@@ -44,8 +44,8 @@ public class CategoriaServiceTests
     {
         var categoria = new Categoria();
 
-        _repository.Add(categoria);
-        _repository.SaveChangesAsync().Returns(false);
+        _repository.CategoriaRepository.Add(categoria);
+        _repository.Commit().Returns(false);
 
         var result = await _service.Add(categoria);
         result.Should().BeNull();
@@ -56,9 +56,9 @@ public class CategoriaServiceTests
     {
         var categoria = _categoriaBuilder.GeraCategoria(true);
 
-        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
-        _repository.Delete(categoria);
-        _repository.SaveChangesAsync().Returns(true);
+        _repository.CategoriaRepository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
+        _repository.CategoriaRepository.Delete(categoria);
+        _repository.Commit().Returns(true);
 
         var result = await _service.Delete(categoria);
         result.Should().BeTrue();
@@ -69,7 +69,7 @@ public class CategoriaServiceTests
     {
         var categoria = new Categoria();
 
-        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(Task.FromResult<Categoria>(null));
+        _repository.CategoriaRepository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(Task.FromResult<Categoria>(null));
 
         var result = await Assert.ThrowsAsync<Exception>(() => _service.Delete(categoria));
 
@@ -81,9 +81,9 @@ public class CategoriaServiceTests
     {
         var categoria = new Categoria();
 
-        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
-        _repository.Delete(categoria);
-        _repository.SaveChangesAsync().Returns(false);
+        _repository.CategoriaRepository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
+        _repository.CategoriaRepository.Delete(categoria);
+        _repository.Commit().Returns(false);
 
         var result = await _service.Delete(categoria);
         result.Should().BeFalse();
@@ -94,9 +94,9 @@ public class CategoriaServiceTests
     {
         var categoria = _categoriaBuilder.GeraCategoria(true);
 
-        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
-        _repository.Update(categoria);
-        _repository.SaveChangesAsync().Returns(true);
+        _repository.CategoriaRepository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
+        _repository.CategoriaRepository.Update(categoria);
+        _repository.Commit().Returns(true);
 
         var result = await _service.Desativar(categoria);
         result.Should().BeTrue();
@@ -107,7 +107,7 @@ public class CategoriaServiceTests
     {
         var categoria = new Categoria();
 
-        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(Task.FromResult<Categoria>(null));
+        _repository.CategoriaRepository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(Task.FromResult<Categoria>(null));
 
         var result = await Assert.ThrowsAsync<Exception>(() => _service.Desativar(categoria));
 
@@ -119,9 +119,9 @@ public class CategoriaServiceTests
     {
         var categoria = new Categoria();
 
-        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
-        _repository.Update(categoria);
-        _repository.SaveChangesAsync().Returns(false);
+        _repository.CategoriaRepository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
+        _repository.CategoriaRepository.Update(categoria);
+        _repository.Commit().Returns(false);
 
         var result = await _service.Desativar(categoria);
         result.Should().BeFalse();
@@ -137,7 +137,7 @@ public class CategoriaServiceTests
             categorias.Add(_categoriaBuilder.GeraCategoria(true));
         }
 
-        _repository.GetAllCategoriaAsync().Returns(categorias.ToArray());
+        _repository.CategoriaRepository.GetAllCategoriaAsync().Returns(categorias.ToArray());
          var result = await _service.GetAllCategoriaAsync();
         result.Should().BeEquivalentTo(categorias);
     }
@@ -145,7 +145,7 @@ public class CategoriaServiceTests
     [Fact]
     public async Task GetAllCategoriaAsync_Deve_RetornarNenhumaCategoriaEncontrada()
     {
-        _repository.GetAllCategoriaAsync().Returns(Task.FromResult<Categoria[]>(null));
+        _repository.CategoriaRepository.GetAllCategoriaAsync().Returns(Task.FromResult<Categoria[]>(null));
         var result = await Assert.ThrowsAsync<Exception>(() => _service.GetAllCategoriaAsync());
 
         result.Message.Should().Be("Categoria não encontrada");
@@ -156,7 +156,7 @@ public class CategoriaServiceTests
     {
         var categoria = _categoriaBuilder.GeraCategoria(true);
 
-        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
+        _repository.CategoriaRepository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
 
         var result = await _service.GetUmaCategoriaAsync(categoria.Id);
 
@@ -168,7 +168,7 @@ public class CategoriaServiceTests
     {
         var id = _faker.Random.Int();
 
-        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(Task.FromResult<Categoria>(null));
+        _repository.CategoriaRepository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(Task.FromResult<Categoria>(null));
 
         var result = await Assert.ThrowsAsync<Exception>(() => _service.GetUmaCategoriaAsync(id));
 
@@ -187,10 +187,10 @@ public class CategoriaServiceTests
             Ativa = categoria.Ativa
         };
 
-        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
+        _repository.CategoriaRepository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
 
-        _repository.Update(categoriaAtualizada);
-        _repository.SaveChangesAsync().Returns(true);
+        _repository.CategoriaRepository.Update(categoriaAtualizada);
+        _repository.Commit().Returns(true);
         var result = await _service.Update(categoriaAtualizada);
 
         result.Should().BeEquivalentTo(categoriaAtualizada);
@@ -199,7 +199,7 @@ public class CategoriaServiceTests
     [Fact]
     public async Task Update_Deve_RetornarCategoriaNaoEncontrada()
     {
-        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(Task.FromResult<Categoria>(null));
+        _repository.CategoriaRepository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(Task.FromResult<Categoria>(null));
 
         var result = await Assert.ThrowsAsync<Exception>(() => _service.Update(new Categoria()));
 
@@ -211,9 +211,9 @@ public class CategoriaServiceTests
     {
         var categoria = _categoriaBuilder.GeraCategoria();
 
-        _repository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
-        _repository.Update(categoria);
-        _repository.SaveChangesAsync().Returns(false);
+        _repository.CategoriaRepository.GetUmaCategoriaAsync(Arg.Any<int>()).Returns(categoria);
+        _repository.CategoriaRepository.Update(categoria);
+        _repository.Commit().Returns(false);
 
         var result = await Assert.ThrowsAsync<Exception>(() => _service.Update(categoria));
 

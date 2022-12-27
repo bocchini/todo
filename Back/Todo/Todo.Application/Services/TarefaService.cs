@@ -6,9 +6,9 @@ namespace Todo.Application.Services;
 
 public class TarefaService : ITarefaService
 {
-    private readonly ITarefaRepository _repositorio;
+    private readonly IUnitOfWork _repositorio;
 
-    public TarefaService(ITarefaRepository repositorio)
+    public TarefaService(IUnitOfWork repositorio)
     {
         _repositorio = repositorio;
     }
@@ -17,8 +17,8 @@ public class TarefaService : ITarefaService
     {
         try
         {
-            _repositorio.Add(tarefa);
-            if(await _repositorio.SaveChangesAsync()) return await _repositorio.GetUmaTarefaAsync(tarefa.Id);
+            _repositorio.TarefaRepository.Add(tarefa);
+            if(await _repositorio.Commit()) return await _repositorio.TarefaRepository.GetUmaTarefaAsync(tarefa.Id);
             return null;
         }
         catch (Exception e)
@@ -31,10 +31,10 @@ public class TarefaService : ITarefaService
     {
         try
         {
-            var tarefaRepositorio = await _repositorio.GetUmaTarefaAsync(tarefa.Id);
+            var tarefaRepositorio = await _repositorio.TarefaRepository.GetUmaTarefaAsync(tarefa.Id);
             if (tarefaRepositorio == null) throw new Exception("Tarefa não encontrada");
-            _repositorio.Delete(tarefa);
-            return await _repositorio.SaveChangesAsync();
+            _repositorio.TarefaRepository.Delete(tarefa);
+            return await _repositorio.Commit();
         }
         catch (Exception e)
         {
@@ -46,7 +46,7 @@ public class TarefaService : ITarefaService
     {
         try
         {
-            var categorias = await _repositorio.GetTarefasIdCategoriaAsync(categoriaId);
+            var categorias = await _repositorio.TarefaRepository.GetTarefasIdCategoriaAsync(categoriaId);
             if (categorias == null) throw new Exception("Nenhuma tarefa encontrada nesta categoria");
             return categorias;
         }
@@ -60,7 +60,7 @@ public class TarefaService : ITarefaService
     {
         try
         {
-            var tarefa = await _repositorio.GetUmaTarefaAsync(id);
+            var tarefa = await _repositorio.TarefaRepository.GetUmaTarefaAsync(id);
             if (tarefa == null) throw new Exception("Tarefa não encontrada");
             return tarefa;
         }
@@ -74,10 +74,10 @@ public class TarefaService : ITarefaService
     {
         try
         {
-            var tarefaRepositorio = await _repositorio.GetUmaTarefaAsync(tarefa.Id);
+            var tarefaRepositorio = await _repositorio.TarefaRepository.GetUmaTarefaAsync(tarefa.Id);
             if (tarefaRepositorio == null) throw new Exception("Tarefa não encontrada");
-            _repositorio.Update(tarefa);
-            if (await _repositorio.SaveChangesAsync()) return tarefa;
+            _repositorio.TarefaRepository.Update(tarefa);
+            if (await _repositorio.Commit()) return tarefa;
             throw new Exception("Erro ao salvar a atualização");
         }
         catch (Exception e)
