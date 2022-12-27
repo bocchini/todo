@@ -24,6 +24,8 @@ builder.Services.AddScoped<ICategoriaRepository, CategoriaRepositoy>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<ITarefaRepository, TarefaRepository>();
 builder.Services.AddScoped<ITarefaService, TarefaService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 var mappingConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new MappingProfile());
